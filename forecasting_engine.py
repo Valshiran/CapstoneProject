@@ -21,6 +21,7 @@ class ForecastingEngine:
         )
 
         # Chronological Split (Prevents future data leak into past training)
+        # effectively splits it into 2014-2016 for train, and holds 2017 for testing
         train_df = df[df["year"] < self.test_start_year].copy()
         test_df = df[df["year"] >= self.test_start_year].copy()
 
@@ -48,7 +49,7 @@ class ForecastingEngine:
         # fit the Machine Learning Model
         self.model.fit(X_train, y_train)
 
-        # generate Predictions & Naive Baseline (Same Day Last Week)
+        # generate predictions & naive baseline
         test_df["pred_demand"] = self.model.predict(X_test)
         test_df["baseline_pred"] = test_df["lag_7"]
 
