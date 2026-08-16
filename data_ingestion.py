@@ -37,12 +37,3 @@ class DataIngestion:
         print(f"Successfully loaded {len(df):,} rows.")
         
         return df
-    
-    # Add this at the very bottom of data_ingestion.py
-if __name__ == "__main__":
-    # Test execution with your Kaggle dataset path
-    data_path = "data/sales_data.csv"
-    ingestion = DataIngestion(data_path)
-    df = ingestion.load_and_validate()
-    print("Sample output:")
-    print(df.head())
