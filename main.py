@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 
 from data_ingestion import DataIngestion
 from feature_engineering import FeatureEngineer
+from forecasting_engine import ForecastingEngine
 
 def main():
     start_time = time.time()
@@ -16,6 +17,10 @@ def main():
     # calls the class/method from feature_engineering.py to create features
     fe = FeatureEngineer()
     featured_df = fe.create_features(raw_df)
+    
+    # calls the class/method from forecasting_engine.p to train/predict
+    forecaster = ForecastingEngine(test_start_year=2017)
+    test_results, metrics = forecaster.train_and_predict(featured_df)
 
     # temporary verification of the output, can be removed later
     # this is to make sure the scripts work
@@ -25,30 +30,14 @@ def main():
     print("               PIPELINE TEST SUMMARY")
     print("=" * 60)
     print(f"Execution Time       : {execution_time:.2f} seconds")
-    print(f"Raw Input Rows       : {len(raw_df):,}")
-    print(f"Featured Output Rows : {len(featured_df):,}")
-    print(f"Total Columns        : {len(featured_df.columns)}")
+    print(f"Test Set Row Count   : {len(test_results):,}")
     print("-" * 60)
-    print("Engineered Columns Created:")
-    print(list(featured_df.columns))
-    print("-" * 60)
-    print("Sample Output Preview:")
-    print(
-        featured_df[
-            [
-                "date",
-                "store",
-                "item",
-                "sales",
-                "lag_1",
-                "lag_7",
-                "rolling_mean_7",
-                "rolling_std_7",
-            ]
-        ].head()
-    )
+    print("REGRESSION PERFORMANCE METRICS:")
+    print(f"  Model MAE          : {metrics['MAE_Model']:.2f} units")
+    print(f"  Baseline MAE       : {metrics['MAE_Baseline']:.2f} units")
+    print(f"  Model RMSE         : {metrics['RMSE_Model']:.2f} units")
+    print(f"  Baseline RMSE      : {metrics['RMSE_Baseline']:.2f} units")
     print("=" * 60)
-
 
 if __name__ == "__main__":
     main()
