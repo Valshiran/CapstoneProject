@@ -3,11 +3,22 @@ import time
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import pandas as pd
+import json
 
 from data_ingestion import DataIngestion
 from feature_engineering import FeatureEngineer
 from forecasting_engine import ForecastingEngine
 from inventory_logic import InventoryOptimizationEngine
+
+def load_config(config_path: str = "config.json") -> dict:
+    """
+    Loads external parameters from JSON configuration file.
+    """
+    if not os.path.exists(config_path):
+        raise FileNotFoundError(f"Configuration file '{config_path}' not found.")
+    
+    with open(config_path, "r") as f:
+        return json.load(f)
 
 def main():
     start_time = time.time()
@@ -26,13 +37,10 @@ def main():
     forecaster = ForecastingEngine(test_start_year=2017)
     test_results, metrics = forecaster.train_and_predict(featured_df)
     
-    # inventory optmization engine
-    optimizer = InventoryOptimizationEngine(
-        lead_time_days = 3,
-        service_factor_z = 1.65,
-        holding_cost_per_unit = 0.5,
-        retail_price_per_unit = 10.0
-    )
+    # inventory optmization engine - I updated this to be dynamic based on the config file
+    config = load_config("config.json")
+    inv_cfg = config["inventory_settings"]
+    optimizer = InventoryOptimizationEngine(**inv_cfg)
     
     # creating the optimized data frame to run calculations on
     final_df = optimizer.calculate_recommendations(test_results)
@@ -75,9 +83,15 @@ def main():
     # =====================================================
     # Generate and save performance plot
     # =====================================================
+    
+    # get the store/item based on config file
+    viz_cfg = config["visuals"]
+    target_store = viz_cfg["target_store"]
+    target_item = viz_cfg["target_item"]
+    
     # Filter for representative series (Store 1, Item 1)
     sample_series = final_df[
-        (final_df["store"] == 1) & (final_df["item"] == 1)
+        (final_df["store"] == target_store) & (final_df["item"] == target_item)
     ].copy()
     sample_series["date"] = pd.to_datetime(sample_series["date"])
     sample_series["quarter"] = sample_series["date"].dt.quarter
