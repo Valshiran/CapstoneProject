@@ -5,6 +5,7 @@ class InventoryOptimizationEngine:
     
     def __init__(
         self,
+        # default values if someone removes values from the config file
         lead_time_days: int = 3,
         service_factor_z: float = 1.65,
         holding_cost_per_unit: float = 0.5,
