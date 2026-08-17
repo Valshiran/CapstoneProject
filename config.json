@@ -1,0 +1,15 @@
+{
+  "inventory_settings": {
+    "lead_time_days": 3,
+    "service_factor_z": 1.65,
+    "holding_cost_per_unit": 0.50,
+    "retail_price_per_unit": 10.00
+  },
+  "forecasting_settings": {
+    "test_start_year": 2017
+  },
+  "visuals": {
+    "target_store": 1,
+    "target_item": 1
+  }
+}
