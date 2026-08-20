@@ -111,6 +111,10 @@ def main():
     # I did not like the look of it (it looked really choppy/busy), so I separated it out into 4 quarters
     # To do this, I felt the easiest way to do this would be using a for loop to generate them, instead of putting the code 4 times
 
+    # Adding dynamic references to the store/item # for the file names of the charts
+    target_store = viz_cfg["target_store"]
+    target_item = viz_cfg["target_item"]
+    
     for q in range(1, 5):
         q_data = sample_series[sample_series["quarter"] == q].copy()
 
@@ -131,7 +135,7 @@ def main():
             q_data["date"],
             q_data["pred_demand"],
             label="Predicted Demand (Model)",
-            color="#1f77b4",
+            color="blue",
             linestyle="--",
             linewidth=1.5,
         )
@@ -145,14 +149,14 @@ def main():
             q_data["date"],
             smoothed_buffer,
             label="Daily Safety Buffer Threshold",
-            color="#d62728",
+            color="red",
             alpha=0.85,
             linewidth=1.5,
         )
 
         # Formatting
         plt.title(
-            f"Store 1, Item 1: Demand Forecast & Buffer ({q_titles[q]})",
+            f"Store {target_store}, Item {target_item}: Demand Forecast & Buffer ({q_titles[q]})",
             fontsize=11,
             pad=10,
         )
