@@ -22,6 +22,12 @@ def load_config(config_path: str = "config.json") -> dict:
 
 def main():
     start_time = time.time()
+    
+    # inventory optmization engine - I updated this to be dynamic based on the config file
+    config = load_config("config.json")
+    inv_cfg = config["inventory_settings"]
+    viz_cfg = config["visuals"]
+    
     data_path = "data/sales_data.csv"
 
     # calls the class/method from data_ingestion.py to load the data
@@ -35,12 +41,17 @@ def main():
     
     # calls the class/method from forecasting_engine.p to train/predict
     forecaster = ForecastingEngine(test_start_year=2017)
-    test_results, metrics = forecaster.train_and_predict(featured_df)
+    test_results, metrics = forecaster.train_and_predict(
+                                        featured_df,
+                                        target_store = viz_cfg["target_store"],
+                                        target_item = viz_cfg["target_item"]
+                                    )
     
-    # inventory optmization engine - I updated this to be dynamic based on the config file
-    config = load_config("config.json")
-    inv_cfg = config["inventory_settings"]
-    optimizer = InventoryOptimizationEngine(**inv_cfg)
+    optimizer = InventoryOptimizationEngine(
+                                **inv_cfg, 
+                                target_store=viz_cfg['target_store'], 
+                                target_item=viz_cfg['target_item']
+                                )
     
     # creating the optimized data frame to run calculations on
     final_df = optimizer.calculate_recommendations(test_results)

@@ -11,7 +11,10 @@ class ForecastingEngine:
         self.model = Ridge(alpha=1.0)
 
     def train_and_predict(
-        self, df: pd.DataFrame
+        self, 
+        df: pd.DataFrame,
+        target_store: int = 1,
+        target_item: int = 2
     ) -> tuple[pd.DataFrame, dict]:
         """
         Splits data chronologically, fits Ridge model, and computes evaluation metrics.
@@ -52,13 +55,16 @@ class ForecastingEngine:
         # generate predictions & naive baseline
         test_df["pred_demand"] = self.model.predict(X_test)
         test_df["baseline_pred"] = test_df["lag_7"]
+        
+        # filtering to a specific store / item
+        target_test = test_df[(test_df["store"] == target_store) & (test_df["item"] == target_item)]
 
         # compute Regression Metrics
-        mae_model = mean_absolute_error(y_test, test_df["pred_demand"])
-        rmse_model = root_mean_squared_error(y_test, test_df["pred_demand"])
+        mae_model = mean_absolute_error(target_test["sales"], target_test["pred_demand"])
+        rmse_model = root_mean_squared_error(target_test["sales"], target_test["pred_demand"])
 
-        mae_base = mean_absolute_error(y_test, test_df["baseline_pred"])
-        rmse_base = root_mean_squared_error(y_test, test_df["baseline_pred"])
+        mae_base = mean_absolute_error(target_test["sales"], target_test["baseline_pred"])
+        rmse_base = root_mean_squared_error(target_test["sales"], target_test["baseline_pred"])
 
         metrics = {
             "MAE_Model": mae_model,

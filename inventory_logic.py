@@ -9,7 +9,9 @@ class InventoryOptimizationEngine:
         lead_time_days: int = 3,
         service_factor_z: float = 1.65,
         holding_cost_per_unit: float = 0.5,
-        retail_price_per_unit: float = 10.0
+        retail_price_per_unit: float = 10.0,
+        target_store: int = 1,
+        target_item: int = 2
     ):
         """
         Initializes the InventoryOptimizationEngine with parameters for inventory calculations.
@@ -18,6 +20,8 @@ class InventoryOptimizationEngine:
         self.service_factor_z = service_factor_z
         self.holding_cost_per_unit = holding_cost_per_unit
         self.retail_price_per_unit = retail_price_per_unit
+        self.target_store = target_store
+        self.target_item = target_item
         
     def calculate_recommendations(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -30,8 +34,8 @@ class InventoryOptimizationEngine:
         # status message to show what portion of the pipeline/flow it is working on
         print("Calculating inventory parameters and cost evaluations...")
         
-        # creates a copy of the df, so a clean copy of the raw df is still in memory
-        df = df.copy()
+        # creates a filtered copy of the df, so a clean copy of the raw df is still in memory
+        df = df[(df["store"] == self.target_store) & (df["item"] == self.target_item)].copy()
         
         # =========================================================
         # DYNAMIC SAFETY STOCK & REORDER POINT FORMULAS
